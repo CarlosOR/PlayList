@@ -3,6 +3,7 @@
 
 [![Build Status](https://travis-ci.org/joemccann/dillinger.svg?branch=master)](https://travis-ci.org/joemccann/dillinger)
 
+- Te api was created in .Net Core V6
 
 - An SQLite database is being used which is being created and filled by migrations when the application starts.
 Unit tests i didn't achieve to have good coverage, because of the time.
