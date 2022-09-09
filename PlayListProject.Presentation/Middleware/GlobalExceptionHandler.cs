@@ -9,6 +9,10 @@ namespace PlayListProject.Presentation.Middleware
     public class GlobalExceptionHandler : IMiddleware
     {
         private readonly ILogger<GlobalExceptionHandler> _logger;
+        /// <summary>
+        /// This middleware aims to capture requests and avoid displaying more information than necessary when an error occurs.
+        /// </summary>
+        /// <param name="logger"></param>
         public GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger)
         {
             _logger = logger;
@@ -24,6 +28,7 @@ namespace PlayListProject.Presentation.Middleware
                 _logger.LogInformation(ex.Message);
                 _logger.LogError(ex, ex.Message);
                 context.Response.ContentType = "application/json";
+                ///Custom Exception called PlayListException to set and handle the HttpCodes
                 if (ex is PlayListException playListException)
                 {
                     context.Response.StatusCode = (int)playListException.StatusCode;

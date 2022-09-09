@@ -12,6 +12,7 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+//Inyec of Dependencies
 builder.Services.ResolveDependencyInjection();
 builder.Services.ResolveContext(builder.Configuration.GetValue<string>("SqliteUrlConnection"));
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());

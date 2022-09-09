@@ -6,6 +6,7 @@ using PlayListProject.Application.IServices;
 using Microsoft.EntityFrameworkCore;
 using PlayListProject.Application.CustomsExceptions;
 using PlayListProject.Application.Validations;
+using FluentValidation.Results;
 
 namespace PlayListProject.Application.Services
 {
@@ -84,9 +85,9 @@ namespace PlayListProject.Application.Services
             ExistElement(dtoSong.Id);
             IEnumerable<int> idsPlayLists = dtoSong.PlayList.Select(p => p.Id);
             Song song = _mapper.Map<Song>(dtoSong);
-            song.PlayListSongs = await _playListSongApplication.SaveSongPlayListByIdSong(idsPlayLists, song.Id);
-            _context.PlayListSong.RemoveRange(await ElementsToDelete(idsPlayLists.ToList(), song.Id));
-            await _context.PlayListSong.AddRangeAsync(song.PlayListSongs);
+            song.PlayListSongs = (await _playListSongApplication.SaveSongPlayListByIdSong(idsPlayLists, song.Id)) ?? new List<PlayListSong>();
+            _context.PlayListSong.RemoveRange(await ElementsToDelete(idsPlayLists.ToList(), song.Id) ?? new List<PlayListSong>());
+            await _context.PlayListSong.AddRangeAsync(song.PlayListSongs );
             _context.Songs.Update(song);
             await _context.SaveChangesAsync();
             return _mapper.Map<DtoSong>(song);
@@ -109,9 +110,10 @@ namespace PlayListProject.Application.Services
 
         private bool ValidateModel(DtoSong dtoSong, bool validateId = true)
         {
-            if (!new ValidatorDtoSong(validateId).Validate(dtoSong).IsValid)
+            ValidationResult validationResult = new ValidatorDtoSong(validateId).Validate(dtoSong);
+            if (!validationResult.IsValid)
             {
-                throw new BadRequestException();
+                throw new BadRequestException(validationResult.Errors.Select(e => e.ErrorMessage).Aggregate((a,v) => $"{a},{v}"));
             }
             if (dtoSong.PlayList is null)
                 dtoSong.PlayList = new List<DtoPlayList>();

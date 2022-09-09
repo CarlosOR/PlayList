@@ -24,8 +24,7 @@ namespace PlayListProject.Application.Validations
                 {
                     if (pl != null && pl.Count > 0)
                     {
-                        ValidatorDtoPlayList validationRules = new ValidatorDtoPlayList(validateId);
-                        return pl.All(s => validationRules.Validate(s).IsValid);
+                        return pl.All(s => s.Id > 0);
                     }
                     return true;
                 });
